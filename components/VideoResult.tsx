@@ -109,6 +109,7 @@ const VideoResult: React.FC<VideoResultProps> = ({ videoFile, clip, isActive }) 
       const { createFFmpeg, fetchFile } = window.FFmpeg;
       
       // CONFIGURATION INTELLIGENTE
+      // Sur Vercel standard, ceci sera false, déclenchant le mode compatible
       const isSecure = window.crossOriginIsolated;
       
       let ffmpegConfig: any = { log: true };
@@ -116,9 +117,8 @@ const VideoResult: React.FC<VideoResultProps> = ({ videoFile, clip, isActive }) 
       if (!isSecure) {
           console.warn("⚠️ Mode sécurisé non détecté. Bascule vers le mode compatible (plus lent).");
           setProcessStatus('Loading Compatibility Engine...');
-          // Force usage of the single-threaded core which doesn't need SharedArrayBuffer
-          // This is the magic fix for "SharedArrayBuffer is not defined"
-          ffmpegConfig.corePath = "https://unpkg.com/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js";
+          // On force la version 0.11.6 pour correspondre au script dans index.html
+          ffmpegConfig.corePath = "https://unpkg.com/@ffmpeg/core@0.11.6/dist/ffmpeg-core.js";
       } else {
           setProcessStatus('Loading High-Speed Engine...');
       }
@@ -133,7 +133,7 @@ const VideoResult: React.FC<VideoResultProps> = ({ videoFile, clip, isActive }) 
       
       ffmpeg.FS('writeFile', inputName, await fetchFile(videoFile));
 
-      setProcessStatus(isSecure ? 'Cutting (Fast)...' : 'Cutting (Slow Mode)...');
+      setProcessStatus(isSecure ? 'Cutting (Fast)...' : 'Cutting (Compatibility Mode)...');
       
       await ffmpeg.run(
         '-i', inputName,
