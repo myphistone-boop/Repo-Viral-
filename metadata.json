@@ -1,0 +1,5 @@
+{
+  "name": "ViralCut AI",
+  "description": "Transform long-form videos into viral TikTok clips instantly using Gemini 1.5 Pro computer vision and audio analysis.",
+  "requestFramePermissions": []
+}
